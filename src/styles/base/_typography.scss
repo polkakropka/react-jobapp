@@ -1,0 +1,67 @@
+.h-h1-special {
+  font-family: $font-headline-special;
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  letter-spacing: .5rem;
+  @include media(">=tablet-portrait") {
+    font-size: 10rem;
+  }
+}
+.h-h2-special {
+  font-family: $font-headline-special;
+  font-size: 3rem;
+  letter-spacing: .5rem;
+  margin-bottom: 1rem;
+  @include media(">=tablet-portrait") {
+    font-size: 5rem;
+  }
+}
+h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  @include media(">=tablet-portrait") {
+    font-size: 5rem;
+  }
+}
+h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  @include media(">=tablet-portrait") {
+    font-size: 3rem;
+  }
+}
+h3 {
+  //font-family: $font-headline-special;
+  font-size: 2rem;
+  margin-bottom: 2.5rem;
+  @include media(">=tablet-portrait") {
+    font-size: 2.5rem;
+  }
+}
+h4 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  @include media(">=tablet-portrait") {
+    font-size: 1.8rem;
+  }
+}
+p, li {
+  font-size: 1.6rem;
+  @include media(">=tablet-portrait") {
+    font-size: 1.8rem;
+  }
+}
+p, ul {
+  margin-bottom: 1.5rem;
+}
+
+p {
+  a {
+    transition: color .3s;
+    text-decoration: underline;
+    &:hover {
+      color: $color-grey;
+    }
+  }
+}
+

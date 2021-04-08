@@ -1,0 +1,20 @@
+@include font-face(
+                'StarWarsJedi',
+                font('StarWarsJedi/StarJedi'),
+                400,
+                normal
+);
+
+@include font-face(
+                'StarJediHollow',
+                font('StarWarsJedi/StarJediHollow'),
+                400,
+                normal
+);
+
+@include font-face(
+                'NotoSans Regular',
+                font('NotoSans/NotoSans'),
+                400,
+                normal
+);

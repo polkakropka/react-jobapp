@@ -1,0 +1,21 @@
+@import "../../App.scss";
+
+.job-app__header {
+  padding: 50px 20px 0 20px;
+  color: white;
+  position: relative;
+
+  .h-h1-special {
+    position: relative;
+    z-index: 1;
+  }
+
+  &__logo {
+    display: flex;
+    justify-content: center;
+  }
+  &__content {
+    position: relative;
+    z-index: 1;
+  }
+}

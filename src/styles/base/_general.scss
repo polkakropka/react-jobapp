@@ -1,0 +1,41 @@
+$body-max-width: 100%;
+
+$font-size-default: 10px;
+$font-default: 'NotoSans Regular', sans-serif;
+$font-headline-special: 'StarWarsJedi', sans-serif;
+$font-subheadline-special: 'StarJediHollow', sans-serif;
+$font-color-default: white;
+
+
+
+// spacing default values
+$margin-default: (
+        "desktop": 40px,
+        "tablet": 20px,
+        "phone": 20px,
+) !default;
+
+
+// breakpoint definitions ( usage: @include media(">=desktop") )
+$breakpoints: (
+        "desktop": 1200px, // xl @include media(">=desktop")
+        "tablet-landscape": 992px, // lg @include media(">=tablet-landscape")
+        "tablet-portrait": 768px, // md @include media(">=tablet-portrait")
+        "phone-landscape": 576px, // sm @include media(">=phone-landscape")
+        "phone-portrait": 575px, //xs @include media("<phone-portrait")
+        "phone-very-small": 400px //xxs @include media("<phone-very-small")
+
+);
+
+$media-expressions: (
+        'screen': 'screen',
+        'print': 'print',
+        'handheld': 'handheld',
+        'landscape': '(orientation: landscape)',
+        'portrait': '(orientation: portrait)',
+        'retina2x': '(-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi)',
+        'retina3x': '(-webkit-min-device-pixel-ratio: 3), (min-resolution: 350dpi)',
+        'ie11': '(-ms-high-contrast:none), (-ms-high-contrast: active)',
+        'canhover': '(any-hover: hover)',
+        'reduced-motion': '(prefers-reduced-motion)',
+);

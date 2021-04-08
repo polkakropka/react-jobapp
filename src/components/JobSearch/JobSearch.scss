@@ -1,0 +1,142 @@
+@import "../../App.scss";
+
+$input-height: 50px;
+$input-border-radius: 4px;
+
+.job-app__search {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  @include media(">=tablet-portrait") {
+    padding: 50px 20px;
+  }
+
+  &__container {
+    width: calc(100% - 40px);
+    padding: 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    @include media(">=tablet-portrait") {
+      width: 100%;
+    }
+  }
+
+  input[type="text"] {
+    height: $input-height;
+    width: 100%;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    border-radius: $input-border-radius;
+    border: 2px solid $color-primary;
+    padding: 0 20px;
+    @include media(">=tablet-portrait") {
+      flex: 1;
+      margin-bottom: 0;
+    }
+  }
+  input[type="submit"] {
+    order: 3;
+    @include media(">=tablet-portrait") {
+      margin-left: 10px;
+      order: 2;
+    }
+  }
+  .input-search  {
+    order: 0;
+    @include media(">=tablet-portrait") {
+      max-width: 45%;
+      margin-right: 10px;
+    }
+  }
+  .input-location {
+    order: 1;
+    max-width: 100%;
+
+    @include media(">=tablet-portrait") {
+      max-width: 30%;
+    }
+  }
+  ::-webkit-input-placeholder {
+    color: $color-primary;
+    font-size: 2rem;
+  }
+  &__filter {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    order: 2;
+    padding: 0 0 20px 0;
+    color: white;
+    @include media(">=phone-portrait") {
+      flex-direction: row;
+    }
+    @include media(">=tablet-portrait") {
+      padding: 20px 0;
+      order: 3;
+    }
+    &__item {
+      display: flex;
+      flex-direction: row-reverse;
+      margin-right: 30px;
+
+      & label {
+        font-size: 2rem;
+        display: block;
+        position: relative;
+        padding-left: 35px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        user-select: none;
+
+        & input {
+          position: absolute;
+          opacity: 0;
+          cursor: pointer;
+          height: 0;
+          width: 0;
+        }
+
+        & .checkmark {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 25px;
+          width: 25px;
+          background-color: #eee;
+
+          &::after {
+            content: "";
+            position: absolute;
+            display: none;
+          }
+        }
+
+        &:hover input ~ .checkmark {
+          background-color: $color-grey;
+        }
+        & input:checked ~ .checkmark {
+          background-color: $color-primary;
+          transition: background-color .3s;
+
+          &::after {
+            display: block;
+            left: 9px;
+            top: 5px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+          }
+          &:hover {
+            background-color: $color-primary-hover;
+          }
+        }
+
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+@import "../../App.scss";
+
+.pagination {
+  display: flex;
+  flex-direction: row;
+
+  justify-content: center;
+
+  li {
+    display: flex;
+    align-items: center;
+    font-family: $font-subheadline-special;
+    font-size: 4rem;
+    padding: 10px;
+    color: $color-primary-hover;
+    transition: color .3s;
+    width: 25px;
+    &:hover {
+      color: #fff;
+    }
+    &.active {
+      color: #fff;
+    }
+  }
+}

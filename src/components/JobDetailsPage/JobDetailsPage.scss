@@ -1,0 +1,50 @@
+@import "../../App.scss";
+
+.job-app__details-page {
+  &__container {
+    background: $color-primary;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+
+
+  }
+  &__content__title {
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1 1;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 20px;
+
+    h2 {
+      width: 70%;
+    }
+    .company-logo {
+      width: 20%;
+      max-width: 150px;
+    }
+
+  }
+  &__content__title__details {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: black;
+    padding: 20px;
+
+    @include media(">=tablet-portrait") {
+      flex-direction: row;
+    }
+  }
+  &__content__container {
+    padding: 40px 20px;
+  }
+  &__content__description {
+    li {
+      list-style: square;
+      margin-left: 20px;
+    }
+  }
+}
+

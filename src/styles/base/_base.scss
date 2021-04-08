@@ -1,0 +1,71 @@
+html {
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    width: $body-max-width;
+    min-height: 100%;
+    font-size: $font-size-default;
+    font-family: $font-default;
+    color: $font-color-default;
+}
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+blockquote,
+p,
+pre,
+dl,
+dd,
+ol,
+ul,
+figure,
+hr,
+fieldset,
+legend {
+  margin: 0;
+  padding: 0;
+}
+
+input,
+textarea,
+select,
+button {
+  cursor: pointer;
+  &:hover,
+  &:focus,
+  &:active {
+    outline: 0;
+  }
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+::-ms-clear {
+  display: none;
+}
+
+ul {
+  list-style-type: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+body {
+  position: relative;
+  height: 100%;
+  min-height: 100vh;
+}
+
+table {
+  word-break: normal;
+}

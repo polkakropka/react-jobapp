@@ -1,0 +1,13 @@
+/// get path of asset from defined asset dir
+///
+/// Expected usage: generate correct path to asset relative to set asset-path
+///
+/// @require    {variable} $image-path - path to asset dir
+/// @param      {path} $relativeFilePath ['placeholder.svg'] - Asset path
+///
+/// @output     complete path to asset
+
+
+@function font($relativeFilePath) {
+  @return "#{$font-path}/#{$relativeFilePath}";
+}
