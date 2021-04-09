@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import '../../App.scss'
 import './JobsList.scss'
 import { Link } from 'react-router-dom'
@@ -19,22 +19,18 @@ const JobsList = (props: {jobs: any[]}) => {
     const [jobFullTime, setJobFullTime] = useState<FiltersType>({active: false, name: ''})
     const [currentResults, setCurrentResults] = useState('')
     const [filteredJobsPerPage, setFilteredJobsPerPage] = useState(Array()) // instead of useState([])
-    const [currentPage, setCurrentPage] = useState()
+    const [currentPage, setCurrentPage] = useState(0)
     let filteredJobs: Array<Job> = []
 
     store.subscribe(() => {
         setJobSearch(store.getState().jobSearchReducer.searchedJobPosition)
         setJobLocation(store.getState().jobSearchReducer.searchedJobLocation)
-        setCurrentResults(store.getState().jobSearchReducer.totalJobs)
+        setCurrentResults(store.getState().jobSearchReducer.totalJobs || filteredJobs.length)
         setJobRemote(store.getState().jobSearchReducer.checkboxRemote)
         setJobFullTime(store.getState().jobSearchReducer.checkboxFullTime)
         setJobPartTime(store.getState().jobSearchReducer.checkboxPartTime)
         setCurrentPage(store.getState().jobSearchReducer.currentPage)
     })
-
-    const checkboxFilterCopy = (jobFullTime: boolean, jobPartTime: boolean, jobRemote: boolean, job: any) => {
-
-    }
 
     const checkboxFilter = (jobFullTime: FiltersType, jobPartTime: FiltersType, jobRemote: FiltersType, value: any) => {
         const jobType = value.type.toLocaleUpperCase();
@@ -49,76 +45,80 @@ const JobsList = (props: {jobs: any[]}) => {
             jobRemote.active
         ]
 
+        const indexOfLastJob = currentPage * 10
+        const indexOfFirstJob = indexOfLastJob - 10
+
+        const currentJobs = props.jobs.slice(indexOfFirstJob, indexOfLastJob)
+        const currentJobsfilteredJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob)
+
+        // console.log('currentJobs ', currentJobs)
+        // console.log('filteredJobs', currentJobsfilteredJobs)
+        // console.log('currentPage', currentPage)
+
         if(filteredJobsActive[0] && !filteredJobsActive[1]) {
-            if (jobType.includes(filteredJobsName[0])) {
-                filteredJobs.push(value)
-            }
-            setFilteredJobsPerPage(filteredJobs.slice(1, 10))
+            if (jobType.includes(filteredJobsName[0])) filteredJobs.push(value)
+            setFilteredJobsPerPage(currentJobsfilteredJobs)
         } else if(!filteredJobsActive[0] && filteredJobsActive[1]) {
             if(jobType.includes(filteredJobsName[1])) {
                 filteredJobs.push(value)
             }
-            setFilteredJobsPerPage(filteredJobs.slice(1, 10))
+            setFilteredJobsPerPage(currentJobsfilteredJobs)
         } else if(filteredJobsActive[0] && filteredJobsActive[1]) {
             if(jobType.includes(filteredJobsName[0]) || jobType.includes(filteredJobsName[1])) {
                 filteredJobs.push(value)
             }
-            setFilteredJobsPerPage(filteredJobs.slice(1, 10))
-        } else if(filteredJobsActive[2] && !filteredJobsActive[0] && !filteredJobsActive[1]) {
+            setFilteredJobsPerPage(currentJobsfilteredJobs)
+            // remote
+        } else if(filteredJobsActive[2]) {
             if(value.location.toLocaleUpperCase().includes(filteredJobsName[2])) {
                 filteredJobs.push(value)
             }
-            setFilteredJobsPerPage(filteredJobs.slice(1, 10))
-        } else {
-            filteredJobs.push(value)
-            setFilteredJobsPerPage(filteredJobs.slice(1, 10))
+            setFilteredJobsPerPage(currentJobsfilteredJobs)
         }
-
-        // filteredJobsActive.map((filter: any, id: number) => {
-        //     console.log(filter)
-        //     if (filter) {
-        //         if (jobType.includes(filteredJobsName[id])) {
-        //             filteredJobs.push(value)
-        //         }
-        //         setFilteredJobsPerPage(filteredJobs.slice(1, 10))
+        // eksperyment
+        // else if(filteredJobsActive[2] && filteredJobsActive[0]) {
+        //     console.log('both')
+        //     if((jobType.includes(filteredJobsName[0]) || jobType.includes(filteredJobsName[1]))
+        //         && value.location.toLocaleUpperCase().includes(filteredJobsName[2])) {
+        //         filteredJobs.push(value)
         //     }
-        // })
+        //     setFilteredJobsPerPage(filteredJobs.slice(0, 10))
+        // }
+        else {
+            filteredJobs.push(value)
+            setFilteredJobsPerPage(currentJobsfilteredJobs)
+        }
     }
     useEffect(() => {
-        if(jobSearch !== '' && jobLocation === '') {
-            props.jobs.filter((value: any) => {
-               if (value.title.toLocaleUpperCase().includes(jobSearch.toLocaleUpperCase())) {
-                   checkboxFilter(jobFullTime, jobPartTime, jobRemote, value)
+        console.log('currentPage', currentPage)
+        const indexOfLastJob = currentPage * 10
+        const indexOfFirstJob = indexOfLastJob - 10
+        const currentJobs = props.jobs.slice(indexOfFirstJob, indexOfLastJob)
+        const currentJobsfilteredJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob)
+
+        props.jobs.filter((value: any) => {
+            if(jobSearch && !jobLocation) {
+                if (value.title.toLocaleUpperCase().includes(jobSearch.toLocaleUpperCase())) {
+                    checkboxFilter(jobFullTime, jobPartTime, jobRemote, value)
                 }
-            })
-            setFilteredJobsPerPage(filteredJobs)
-        } else if (jobSearch === '' && jobLocation !== '') {
-            props.jobs.filter((value: any) => {
+            }
+            else if (!jobSearch && jobLocation) {
                 if (value.location.toLocaleUpperCase().includes(jobLocation.toLocaleUpperCase())) {
                     checkboxFilter(jobFullTime, jobPartTime, jobRemote, value)
                 }
-            })
-            setFilteredJobsPerPage(filteredJobs)
-        } else if (jobSearch !== '' && jobLocation !== '') {
-            props.jobs.filter((value: any) => {
+            } else if (jobSearch && jobLocation) {
                 if (value.title.toLocaleUpperCase().includes(jobSearch.toLocaleUpperCase())
                     && value.location.toLocaleUpperCase().includes(jobLocation.toLocaleUpperCase())) {
                     checkboxFilter(jobFullTime, jobPartTime, jobRemote, value)
                 }
-            })
-           setFilteredJobsPerPage(filteredJobs)
-       } else if (jobSearch === '' && jobLocation === '' && jobRemote.active || jobFullTime.active || jobPartTime.active) {
-            props.jobs.filter((value: any) => {
+                setFilteredJobsPerPage(filteredJobs)
+            } else if (jobRemote.active || jobFullTime.active || jobPartTime.active) {
                 checkboxFilter(jobFullTime, jobPartTime, jobRemote, value)
-            })
-        } else if(jobRemote.active || jobFullTime.active || jobPartTime.active) {
+            } else {
+                setFilteredJobsPerPage(currentJobs)
+            }
+        })
 
-                props.jobs.filter((value: any) => {
-                    checkboxFilter(jobFullTime, jobPartTime, jobRemote, value)
-                })
-        } else {
-            setFilteredJobsPerPage(props.jobs.slice(1, 10))
-        }
         store.dispatch({ type: 'UPDATE_TOTAL_JOBS_NUMBER', number: filteredJobs.length })
     }, [jobSearch, jobLocation, jobRemote, jobFullTime, jobPartTime]);
 
