@@ -11,7 +11,7 @@ import {
     BrowserRouter as Router,
     Switch,
     Route
-  } from "react-router-dom"
+} from "react-router-dom"
 import JobDetailsPage from './components/JobDetailsPage/JobDetailsPage'
 import {convertToLink} from './helpers/helpers'
 import { Job } from './interfaces/job'
@@ -30,8 +30,8 @@ const App: React.FC = () => {
     useEffect(() => {
         const fetchPosts = async() => {
             setLoading(true)
-           // const response = await axios.get(baseURL)
-           // setJobs(response.data);
+            // const response = await axios.get(baseURL)
+            // setJobs(response.data);
             setLoading(false)
         }
         fetchPosts()
@@ -65,8 +65,8 @@ const App: React.FC = () => {
                         <div className="job-app__top l-container">
                             <JobSearch/>
 
-                         {loading ? <p>Loading...</p> :
-                             <JobsList jobs={updatedJobs}/>}
+                            {loading ? <p>Loading...</p> :
+                                <JobsList jobs={jobs[0]}/>}
                         </div>
                         <Pagination/>
                     </Route>
