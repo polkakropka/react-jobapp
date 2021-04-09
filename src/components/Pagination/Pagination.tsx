@@ -13,7 +13,6 @@ const Pagination = () => {
     })
     useEffect(() => {
         store.dispatch({ type: 'UPDATE_CURRENT_PAGE', number: currentPage })
-
     }, [currentPage])
     for(let i = 1; i <= Math.ceil(totalJobs / jobsPerPage); i++) {
         pageNumbers.push(i)
