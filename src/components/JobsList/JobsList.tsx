@@ -1,132 +1,81 @@
-import { useState, useEffect } from 'react'
+import React, {useState, useMemo, useEffect} from 'react'
 import '../../App.scss'
 import './JobsList.scss'
-import { Link } from 'react-router-dom'
+import {Link, Route} from 'react-router-dom'
 import { convertToLink } from '../../helpers/helpers'
 import { Job } from '../../interfaces/job'
 import { store } from '../../store/store'
+import Pagination from "../Pagination/Pagination";
 
 interface FiltersType {
     active: boolean,
     name: string,
 }
 
-const JobsList = (props: {jobs: any[]}) => {
+const JobsList = (props: {activeFilter:any, jobs: any[]}) => {
+    const { activeFilter } = props;
     const [jobSearch, setJobSearch] = useState('')
     const [jobLocation, setJobLocation] = useState('')
-    const [jobRemote, setJobRemote] = useState<FiltersType>({active: false, name: ''})
-    const [jobPartTime, setJobPartTime] = useState<FiltersType>({active: false, name: ''})
-    const [jobFullTime, setJobFullTime] = useState<FiltersType>({active: false, name: ''})
-    const [currentResults, setCurrentResults] = useState('')
-    const [filteredJobsPerPage, setFilteredJobsPerPage] = useState(Array()) // instead of useState([])
-    const [currentPage, setCurrentPage] = useState(0)
-    let filteredJobs: Array<Job> = []
-
+    const [currentPage, setCurrentPage] = useState(1)
+    const [jobPerPage, setJobPerPage] = useState(10);
+    //let filteredJobs: Array<Job> = []
     store.subscribe(() => {
         setJobSearch(store.getState().jobSearchReducer.searchedJobPosition)
         setJobLocation(store.getState().jobSearchReducer.searchedJobLocation)
-        setCurrentResults(store.getState().jobSearchReducer.totalJobs || filteredJobs.length)
-        setJobRemote(store.getState().jobSearchReducer.checkboxRemote)
-        setJobFullTime(store.getState().jobSearchReducer.checkboxFullTime)
-        setJobPartTime(store.getState().jobSearchReducer.checkboxPartTime)
         setCurrentPage(store.getState().jobSearchReducer.currentPage)
     })
+    const filteredJobs = useMemo(() => {
+        const hasCategoryFilter = Object.values(activeFilter).includes(true);
+        const matchesCategories = (job:Job) => {
+            const jobTypes = [];
+            jobTypes.push(job.type, job.location)
 
-    const checkboxFilter = (jobFullTime: FiltersType, jobPartTime: FiltersType, jobRemote: FiltersType, value: any) => {
-        const jobType = value.type.toLocaleUpperCase();
-        const filteredJobsName = [
-            jobFullTime.name.toLocaleUpperCase(),
-            jobPartTime.name.toLocaleUpperCase(),
-            jobRemote.name.toLocaleUpperCase()
-        ]
-        const filteredJobsActive = [
-            jobFullTime.active,
-            jobPartTime.active,
-            jobRemote.active
-        ]
-
-        const indexOfLastJob = currentPage * 10
-        const indexOfFirstJob = indexOfLastJob - 10
-
-        const currentJobs = props.jobs.slice(indexOfFirstJob, indexOfLastJob)
-        const currentJobsfilteredJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob)
-
-        // console.log('currentJobs ', currentJobs)
-        // console.log('filteredJobs', currentJobsfilteredJobs)
-        // console.log('currentPage', currentPage)
-
-        if(filteredJobsActive[0] && !filteredJobsActive[1]) {
-            if (jobType.includes(filteredJobsName[0])) filteredJobs.push(value)
-            setFilteredJobsPerPage(currentJobsfilteredJobs)
-        } else if(!filteredJobsActive[0] && filteredJobsActive[1]) {
-            if(jobType.includes(filteredJobsName[1])) {
-                filteredJobs.push(value)
-            }
-            setFilteredJobsPerPage(currentJobsfilteredJobs)
-        } else if(filteredJobsActive[0] && filteredJobsActive[1]) {
-            if(jobType.includes(filteredJobsName[0]) || jobType.includes(filteredJobsName[1])) {
-                filteredJobs.push(value)
-            }
-            setFilteredJobsPerPage(currentJobsfilteredJobs)
-            // remote
-        } else if(filteredJobsActive[2]) {
-            if(value.location.toLocaleUpperCase().includes(filteredJobsName[2])) {
-                filteredJobs.push(value)
-            }
-            setFilteredJobsPerPage(currentJobsfilteredJobs)
+            if (hasCategoryFilter) {
+                return jobTypes.some(
+                    (type:string) => {
+                        return activeFilter[type] === true
+                    }
+                )
+            } else return true;
         }
-        // eksperyment
-        // else if(filteredJobsActive[2] && filteredJobsActive[0]) {
-        //     console.log('both')
-        //     if((jobType.includes(filteredJobsName[0]) || jobType.includes(filteredJobsName[1]))
-        //         && value.location.toLocaleUpperCase().includes(filteredJobsName[2])) {
-        //         filteredJobs.push(value)
-        //     }
-        //     setFilteredJobsPerPage(filteredJobs.slice(0, 10))
-        // }
-        else {
-            filteredJobs.push(value)
-            setFilteredJobsPerPage(currentJobsfilteredJobs)
+        const matchesJobs = (job: Job) => {
+            if(jobSearch && !jobLocation) return job.title.toLowerCase().includes(jobSearch.toLowerCase())
+            if(jobLocation && !jobSearch) return job.location.toLowerCase().includes(jobLocation.toLowerCase())
+            if(jobSearch && jobLocation) return job.title.toLowerCase().includes(jobSearch.toLowerCase())
+                && job.location.toLowerCase().includes(jobLocation.toLowerCase())
+            else {return props.jobs}
         }
-    }
+        return props.jobs
+            .filter(matchesJobs)
+            .filter(matchesCategories);
+    }, [props.jobs, jobSearch, jobLocation, activeFilter])
+
+    //pagination
+    const currentJobs = filteredJobs.slice(
+        (currentPage - 1) * jobPerPage,
+        currentPage * jobPerPage
+    );
+    const pages = Math.ceil(filteredJobs.length / jobPerPage);
+
     useEffect(() => {
-        console.log('currentPage', currentPage)
-        const indexOfLastJob = currentPage * 10
-        const indexOfFirstJob = indexOfLastJob - 10
-        const currentJobs = props.jobs.slice(indexOfFirstJob, indexOfLastJob)
-        const currentJobsfilteredJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob)
+        if (currentPage > pages) {
+            setCurrentPage(1);
+        }
+    }, [currentPage, pages]);
 
-        props.jobs.filter((value: any) => {
-            if(jobSearch && !jobLocation) {
-                if (value.title.toLocaleUpperCase().includes(jobSearch.toLocaleUpperCase())) {
-                    checkboxFilter(jobFullTime, jobPartTime, jobRemote, value)
-                }
-            }
-            else if (!jobSearch && jobLocation) {
-                if (value.location.toLocaleUpperCase().includes(jobLocation.toLocaleUpperCase())) {
-                    checkboxFilter(jobFullTime, jobPartTime, jobRemote, value)
-                }
-            } else if (jobSearch && jobLocation) {
-                if (value.title.toLocaleUpperCase().includes(jobSearch.toLocaleUpperCase())
-                    && value.location.toLocaleUpperCase().includes(jobLocation.toLocaleUpperCase())) {
-                    checkboxFilter(jobFullTime, jobPartTime, jobRemote, value)
-                }
-                setFilteredJobsPerPage(filteredJobs)
-            } else if (jobRemote.active || jobFullTime.active || jobPartTime.active) {
-                checkboxFilter(jobFullTime, jobPartTime, jobRemote, value)
-            } else {
-                setFilteredJobsPerPage(currentJobs)
-            }
-        })
+    const pageNumbers = Array(pages)
+        .fill(null)
+        .map((val, index) => index + 1);
 
-        store.dispatch({ type: 'UPDATE_TOTAL_JOBS_NUMBER', number: filteredJobs.length })
-    }, [jobSearch, jobLocation, jobRemote, jobFullTime, jobPartTime]);
+    const handleClick = (page:number) => {
+        setCurrentPage(page);
+    };
 
     return (
-        <div className="job-app__container l-container">
-            <h4 className="center">We have found {currentResults} star jobs for your</h4>
+        <div className="job-app__container">
+            <h4 className="center">We have found {filteredJobs.length} star jobs for your</h4>
             <ul className="job-app__list">
-                {filteredJobsPerPage.map((job: Job, id) => (
+                {currentJobs.map((job: Job, id) => (
                     <li className="job-app__item" key={job.id}>
                         <Link to={"/" + convertToLink(job.title)}>
                             <h3 className="job-app__item__title">{job.title}</h3>
@@ -142,6 +91,11 @@ const JobsList = (props: {jobs: any[]}) => {
                     </li>
                 ))}
             </ul>
+            <Pagination
+                pageNumbers={pageNumbers}
+                handleClick={handleClick}
+                currentPage={currentPage}
+            />
         </div>
     )
 }

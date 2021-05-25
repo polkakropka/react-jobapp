@@ -28,28 +28,27 @@ const filtersCheckboxContent = [
         'action': 'UPDATE_SEARCHED_JOB_REMOTE'
     }
 ]
-const JobSearch: React.FC = () => {
+const JobSearch= (props:any) => {
+    const {activeFilter, setActiveFilter} = props
     const [jobSearch, setJobSearch] = useState<string>('')
     const [jobLocation, setJobLocation] = useState<string>('')
     const getSearchValues = () => {
         store.dispatch({ type: 'UPDATE_SEARCHED_JOB_POSITION', name: jobSearch})
         store.dispatch({ type: 'UPDATE_SEARCHED_JOB_LOCATION', name: jobLocation})
     }
-
-    const handleCheckboxChange = (event: any) => {
-        const target = event.target;
-        store.dispatch({ type: target.dataset.action, boolean: {
-            active: target.checked,
-            name: target.dataset.label,
-        }})
-    }
+    const handleChange = (text:string) => (event:any) => {
+        setActiveFilter((prev:any) => ({
+            ...prev,
+            [text]: event.target.checked
+        }));
+    };
 
     return (
         <div className="job-app__top l-container">
-            <div className="job-app__search l-container">
+            <div className="job-app__search">
                 <div className="job-app__search__container">
                     <input
-                        id="job-search" 
+                        id="job-search"
                         className="input-search"
                         type="text"
                         placeholder="Job Position"
@@ -69,7 +68,7 @@ const JobSearch: React.FC = () => {
                                     <input
                                         type="checkbox"
                                         name={filter.name}
-                                        onChange={handleCheckboxChange}
+                                        onChange={handleChange(filter.label)}
                                         data-action={filter.action}
                                         data-label={filter.label}
                                     />

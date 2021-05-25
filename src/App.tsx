@@ -4,7 +4,6 @@ import jobsData from './data/jobs.json'
 import Header from './components/Header/Header'
 import JobSearch from './components/JobSearch/JobSearch'
 import JobsList from './components/JobsList/JobsList'
-import Pagination from './components/Pagination/Pagination'
 import Footer from './components/Footer/Footer'
 import AddJob from './components/AddJob/AddJob'
 import {
@@ -18,15 +17,15 @@ import { Job } from './interfaces/job'
 import { store } from './store/store'
 
 const App: React.FC = () => {
+    const [activeFilter, setActiveFilter] = useState([]);
     const [jobs, setJobs] = useState([jobsData])
     const [loading, setLoading] = useState(false)
-
-    const [isCurrent, setCurrentState] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1)
     const updatedJobs: Array<any> = []
     updatedJobs.push(...jobs[0])
 
     // const baseURL = 'https://cors-anywhere.herokuapp.com/https://jobs.github.com/positions.json'
-
+    //console.log(activeFilter)
     useEffect(() => {
         const fetchPosts = async() => {
             setLoading(true)
@@ -40,6 +39,10 @@ const App: React.FC = () => {
 
         updatedJobs.unshift(store.getState().addedNewJobsReducer.newJob[0])
     }, [jobs, updatedJobs])
+
+    store.subscribe(() => {
+        setCurrentPage(store.getState().jobSearchReducer.currentPage)
+    })
 
     // const indexOfLastJob = currentPage * jobsPerPage
     // const indexOfFirstJob = indexOfLastJob - jobsPerPage
@@ -61,14 +64,17 @@ const App: React.FC = () => {
                         <AddJob/>
                     </Route>
 
-                    <Route path="/">
+                    <Route path="/" >
                         <div className="job-app__top l-container">
-                            <JobSearch/>
+                            <JobSearch activeFilter={activeFilter}
+                                       setActiveFilter={setActiveFilter}/>
 
                             {loading ? <p>Loading...</p> :
-                                <JobsList jobs={jobs[0]}/>}
+                                <JobsList
+                                    jobs={jobs[0]}
+                                    activeFilter={activeFilter}
+                                />}
                         </div>
-                        <Pagination/>
                     </Route>
                 </Switch>
             </Router>
